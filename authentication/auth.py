@@ -14,27 +14,27 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-
-def get_password_hash(password):
+def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def create_access_token(data: dict, expires_delta: timedelta = None):
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"expiration": expire})
+    to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY)
     return encoded_jwt
 
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    credentials_exception = HTTPException(
+    datas = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Couldn't validate data",
         headers={"WWW-Authenticate": "Bearer"},
@@ -43,11 +43,11 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         payload = jwt.decode(token, SECRET_KEY)
         name: str = payload.get("sub")
         if name is None:
-            raise credentials_exception
+            raise datas
     except HTTPException:
-        raise credentials_exception
+        raise datas
 
     user = db.query(Id_Cart).filter(Id_Cart.name == name).first()
     if user is None:
-        raise credentials_exception
+        raise datas
     return user

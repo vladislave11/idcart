@@ -1,21 +1,19 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
-from database import Id_Cart
+from database import Id_Cart, get_db, create_db
 from authentication.auth import get_current_user
-from database import get_db, create_db
+from user.routes import router as user_router
+from admin_panel.routes import router as admin_router
+
 
 app = FastAPI()
 
 create_db()
 
+app.include_router(user_router)
+app.include_router(admin_router)
 
-@app.get("/users/me")
-def read_users_me(current_user: Id_Cart = Depends(get_current_user)):
-    return {
-        "isikukood": current_user.isikukood,
-        "name": current_user.username,
-        "email": current_user.email,
-    }
+
 
 
 
