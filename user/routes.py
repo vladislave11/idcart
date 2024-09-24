@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from database import Id_Cart, get_db
-from user.schemas import RegisterUser, LoginUser, DeleteAccountRequest
+from datetime import date
+from user.schemas import LoginUser, DeleteAccountRequest, UpdateUser
 from authentication.auth import hash_password, verify_password, create_access_token, get_current_user
 
 router = APIRouter()
@@ -12,7 +13,7 @@ async def register(
         isikukood: str,
         name: str,
         surname: str,
-        date_of_birth: str,
+        date_of_birth: date,
         citizenship: str,
         gender: str,
         password: str,
@@ -46,7 +47,7 @@ async def register(
 
 
 @router.post("/login/")
-async def login(user: LoginUser, db: Session = Depends(get_db)):
+async def login(user: LoginUser = Depends(), db: Session = Depends(get_db)):
     existing_user = db.query(Id_Cart).filter(Id_Cart.isikukood == user.isikukood).first()
     if existing_user is None or not verify_password(user.password, existing_user.password):
         raise HTTPException(status_code=401, detail="Invalid isikukood or password")
@@ -65,7 +66,7 @@ def read_users_me(current_user: Id_Cart = Depends(get_current_user)):
 
 
 @router.put("/update/{isikukood}")
-async def update_user(isikukood: str, user: RegisterUser, db: Session = Depends(get_db),
+async def update_user(isikukood: str, user: UpdateUser, db: Session = Depends(get_db),
                       current_user: Id_Cart = Depends(get_current_user)):
     if current_user.isikukood != isikukood:
         raise HTTPException(status_code=403, detail="Not authorized to update this user")
@@ -87,7 +88,9 @@ async def update_user(isikukood: str, user: RegisterUser, db: Session = Depends(
 
 
 @router.delete("/users/me")
-async def delete_own_account(delete_request: DeleteAccountRequest, current_user: Id_Cart = Depends(get_current_user), db: Session = Depends(get_db)):
+async def delete_own_account(delete_request: DeleteAccountRequest = Depends(),
+                             current_user: Id_Cart = Depends(get_current_user),
+                             db: Session = Depends(get_db)):
     if not verify_password(delete_request.password, current_user.password):
         raise HTTPException(status_code=403, detail="Invalid password")
     user = db.query(Id_Cart).filter(Id_Cart.isikukood == int(current_user.isikukood)).first()

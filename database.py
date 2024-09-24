@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, BLOB, create_engine, Boolean
+from sqlalchemy import Column, Integer, String, BLOB, create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 from dotenv import load_dotenv

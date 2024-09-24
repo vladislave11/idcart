@@ -1,7 +1,5 @@
-from fastapi import FastAPI, Depends
-from sqlalchemy.orm import Session
-from database import Id_Cart, get_db, create_db
-from authentication.auth import get_current_user
+from fastapi import FastAPI
+from database import create_db
 from user.routes import router as user_router
 from admin_panel.routes import router as admin_router
 
