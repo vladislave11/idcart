@@ -31,10 +31,13 @@ async def update_user(isikukood: str, user_data: UpdateUserSchema, db: Session =
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
+    user.isikukood = user_data.isikukood
     user.name = user_data.name
     user.surname = user_data.surname
+    user.date_of_birth = user_data.date_of_birth
     user.citizenship = user_data.citizenship
     user.gender = user_data.gender
+    user.photo = user_data.photo
 
     db.commit()
     return {"message": "User updated successfully"}

@@ -64,7 +64,9 @@ def read_users_me(current_user: Id_Cart = Depends(get_current_user)):
     return {
         "isikukood": current_user.isikukood,
         "name": current_user.username,
-        "email": current_user.email,
+        "surname": current_user.surname,
+        "date_of_birth": current_user.date_of_birth,
+        "citizenship": current_user.citizenship
     }
 
 

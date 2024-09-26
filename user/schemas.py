@@ -34,7 +34,7 @@ class UpdateUser(BaseModel):
     date_of_birth: Optional[str] = None
     citizenship: Optional[str] = None
     gender: Optional[str] = None
-    photo: Optional[bytes] = None
+    photo: Optional[UploadFile] = None
 
 
 class LoginUser(BaseModel):
