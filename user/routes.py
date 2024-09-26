@@ -5,7 +5,10 @@ from datetime import date
 from user.schemas import LoginUser, DeleteAccountRequest, UpdateUser
 from authentication.auth import hash_password, verify_password, create_access_token, get_current_user
 
-router = APIRouter()
+router = APIRouter(
+    tags=["User Panel"],
+    prefix="/User"
+)
 
 
 @router.post("/register/")
